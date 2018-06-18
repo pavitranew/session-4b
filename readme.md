@@ -4,7 +4,7 @@
 
 `npm run boom!`
 
-Package JSON:
+Note the cleaned up package.json:
 
 ```js
 {
@@ -29,6 +29,10 @@ Package JSON:
   }
 }
 ```
+
+Let's switch this to use our new api.
+
+
 
 ## Babel and Webpack
 
