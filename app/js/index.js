@@ -33,47 +33,40 @@ function dump(){
   document.body.classList.toggle('show');
 }
 
-// CONTENT
-
-// 1 build the navbar dynamically from database
-
-fetchLab( (content) => {
-  const markup =
-  `<ul>
-  ${content.map(
-    recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
-  ).join('')}
-  </ul>`;
-  navbar.innerHTML = markup;
-
-  let generatedContent = '';
-  for (let i = 0; i < content.length; i++){
-    generatedContent += `
-    <div class="recipe-preview">
-    <h2><a href="recipe/${content[i]._id}">${content[i].title}</a></h2>
-    <img src="/img/recipes/${content[i].image}" />
-    <p>${content[i].description}</p>
-    <span onclick="deleteme('${content[i]._id}')">✖︎</span>
-    </div>
-    `
-  }
-  siteWrap.innerHTML = generatedContent;
-
-  const newLinks = document.querySelectorAll('.site-wrap h2 a')
-  newLinks.forEach( link => link.addEventListener('click', detailme) )
-    
-})
-
 // NEW function for getting data - uses fetch and promises
 
 const ApiUrl = 'http://localhost:3001/api/recipes';
 
-function fetchLab(callback) {
-  const ApiUrl = 'http://localhost:3001/api/recipes';
-  console.log(ApiUrl)
+function fetchLab() {
   fetch('http://localhost:3001/api/recipes')
   .then( res => res.json() )
-  .then( data => callback(data) )
+  .then( data => {
+    const markup =
+    `<ul>
+    ${data.map(
+      recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
+    ).join('')}
+    </ul>`;
+    navbar.innerHTML = markup;
+  
+    let output = '';
+  
+    data.forEach((recipe) => {
+      output += `
+        <div class="recipe-preview">
+        <h2><a href="recipe/${recipe._id}">${recipe.title}</a></h2>
+        <img src="/img/recipes/${recipe.image}" />
+        <p>${recipe.description}</p>
+        <span onclick="deleteme('${recipe._id}')">✖︎</span>
+        </div>
+      `
+    })
+  
+    siteWrap.innerHTML = output;
+  
+    const newLinks = document.querySelectorAll('.site-wrap h2 a')
+    newLinks.forEach( link => link.addEventListener('click', detailme) )
+  })
 }
 
 function deleteme(thingtodelete) {
@@ -84,45 +77,59 @@ function deleteme(thingtodelete) {
   .then(location.href = '/')
 }
 
-// function fetchOne(recipeId, callback) {
-//   // let id = this.getAttribute('href');
-//   // console.log(`${ApiUrl}/${recipeId}`)
-//   fetch(`http://localhost:3001/api/recipes/${recipeId}`, {
-//     method: 'get'
-//   })
-//   .then(response => response.json())
-//   // .then(res => console.log(res))
-//   .then(data => callback(data))
-// }
+function detailme() {
+  event.preventDefault();
 
-// function detailme() {
-//   event.preventDefault();
-//   let recipeId = this.getAttribute('href').substring(7);
-//   console.log(recipeId)
-//   fetchOne(recipeId, (content) => {
-//     // console.log('content '+content.title)
-//     let singleRecipeContent = `
-//       <div class="recipe-preview">
-//       <h2>Recipe for ${content.title}</h2>
-//       <img src="/img/recipes/${content.image}" />
-//       <h2>Ingredients</h2>
-//       <ul>
-//       <li>${content.ingredients[0]}</li>
-//       <li>${content.ingredients[1]}</li>
-//       <li>${content.ingredients[2]}</li>
-//     </ul>
-//     <h2>Instructions</h2>
-//       <ul>
-//         <li>${content.preparation[0].step}</li>
-//         <li>${content.preparation[1].step}</li>
-//         <li>${content.preparation[2].step}</li>
-//       </ul>
-//       </div>
-//     `
-//     siteWrap.innerHTML = singleRecipeContent;
-//   })
-//   event.preventDefault();
-// }
+  let recipeId = this.getAttribute('href').substring(7);
 
+  fetch(`http://localhost:3001/api/recipes/${recipeId}`, {
+    method: 'get'
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data)
+    let singleRecipeContent = `
+      <div class="recipe-preview">
+      <h2>Recipe for ${data.title}</h2>
+      <img src="/img/recipes/${data.image}" />
+      <h2>Ingredients</h2>
+      <ul>
+      <li>${data.ingredients[0]}</li>
+      <li>${data.ingredients[1]}</li>
+      <li>${data.ingredients[2]}</li>
+    </ul>
+    <h2>Instructions</h2>
+      <ul>
+        <li>${data.preparation[0].step}</li>
+        <li>${data.preparation[1].step}</li>
+        <li>${data.preparation[2].step}</li>
+      </ul>
+      </div>
+    `
+    siteWrap.innerHTML = singleRecipeContent;
+  })
+}
 
+fetchLab();
 window.addEventListener('scroll', fixNav);
+
+
+const addForm = document.getElementById('addRecipe');
+addForm.addEventListener('submit', addRecipe)
+
+function addRecipe(){
+  event.preventDefault();
+  let label = document.getElementById('label').value;
+  let header = document.getElementById('header').value;
+  let description = document.getElementById('description').value;
+  fetch('http://localhost:3001/api/recipes/', {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({label:label, header:header, description:description})
+  })
+  .then((res) => res.json())
+  .then((data) => console.log(data))
+}

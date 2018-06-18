@@ -1,5 +1,9 @@
 # IV - Client Side with ExpressJS
 
+## Reading
+
+A good video on the [Fetch API](https://youtu.be/Oive66jrwBs)
+
 `npm i`
 
 `npm run boom!`
@@ -147,18 +151,33 @@ fetchLab( (content) => {
   </ul>`;
   navbar.innerHTML = markup;
 
-  let generatedContent = '';
-  for (let i = 0; i < content.length; i++){
-    generatedContent += `
-    <div class="recipe-preview">
-    <h2><a href="recipe/${content[i]._id}">${content[i].title}</a></h2>
-    <img src="/img/recipes/${content[i].image}" />
-    <p>${content[i].description}</p>
-    <span onclick="deleteme('${content[i]._id}')">✖︎</span>
-    </div>
+  // let generatedContent = '';
+  // for (let i = 0; i < content.length; i++){
+  //   generatedContent += `
+  //   <div class="recipe-preview">
+  //   <h2><a href="recipe/${content[i]._id}">${content[i].title}</a></h2>
+  //   <img src="/img/recipes/${content[i].image}" />
+  //   <p>${content[i].description}</p>
+  //   <span onclick="deleteme('${content[i]._id}')">✖︎</span>
+  //   </div>
+  //   `
+  // }
+  // siteWrap.innerHTML = generatedContent;
+
+  let output = '';
+
+  content.forEach((recipe) => {
+    output += `
+      <div class="recipe-preview">
+      <h2><a href="recipe/${recipe._id}">${recipe.title}</a></h2>
+      <img src="/img/recipes/${recipe.image}" />
+      <p>${recipe.description}</p>
+      <span onclick="deleteme('${recipe._id}')">✖︎</span>
+      </div>
     `
-  }
-  siteWrap.innerHTML = generatedContent;
+  })
+
+  siteWrap.innerHTML = output;
 })
 
 function fetchLab(callback) {
@@ -169,6 +188,48 @@ function fetchLab(callback) {
 
 window.addEventListener('scroll', fixNav);
 ```
+
+Note: I left a commented out for loop alternative in the code above for comparison.
+
+Since we are using Promises we can refactor our code further to remove callbacks.
+
+```js
+function fetchLab() {
+  fetch('http://localhost:3001/api/recipes')
+  .then( res => res.json() )
+  .then( data => {
+    const markup =
+    `<ul>
+    ${data.map(
+      recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
+    ).join('')}
+    </ul>`;
+    navbar.innerHTML = markup;
+  
+    let output = '';
+  
+    data.forEach((recipe) => {
+      output += `
+        <div class="recipe-preview">
+        <h2><a href="recipe/${recipe._id}">${recipe.title}</a></h2>
+        <img src="/img/recipes/${recipe.image}" />
+        <p>${recipe.description}</p>
+        <span onclick="deleteme('${recipe._id}')">✖︎</span>
+        </div>
+      `
+    })
+  
+    siteWrap.innerHTML = output;
+  
+    const newLinks = document.querySelectorAll('.site-wrap h2 a')
+    newLinks.forEach( link => link.addEventListener('click', detailme) )
+  })
+}
+
+fetchLab();
+```
+
+And delete the original `fetchLab()` function that used the callback.
 
 Tidy up the index file and css.
 
@@ -263,6 +324,76 @@ Collect the links after generating them:
   
   const newLinks = document.querySelectorAll('.site-wrap h2 a')
   newLinks.forEach( link => link.addEventListener('click', detailme) )
+```
+
+```js
+function detailme() {
+  event.preventDefault();
+
+  let recipeId = this.getAttribute('href').substring(7);
+
+  fetch(`http://localhost:3001/api/recipes/${recipeId}`, {
+    method: 'get'
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data)
+    let singleRecipeContent = `
+      <div class="recipe-preview">
+      <h2>Recipe for ${data.title}</h2>
+      <img src="/img/recipes/${data.image}" />
+      <h2>Ingredients</h2>
+      <ul>
+      <li>${data.ingredients[0]}</li>
+      <li>${data.ingredients[1]}</li>
+      <li>${data.ingredients[2]}</li>
+    </ul>
+    <h2>Instructions</h2>
+      <ul>
+        <li>${data.preparation[0].step}</li>
+        <li>${data.preparation[1].step}</li>
+        <li>${data.preparation[2].step}</li>
+      </ul>
+      </div>
+    `
+    siteWrap.innerHTML = singleRecipeContent;
+  })
+}
+```
+
+### Add a Recipe
+
+We have the form from a previous class.
+
+```html
+  <form id="addRecipe">
+    <input type="text" placeholder="label" name="label" id="label">
+    <input type="text" placeholder="header" name="header" id="header">
+    <textarea type="text" placeholder="content" name="content" id="description"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+```
+
+```js
+const addForm = document.getElementById('addRecipe');
+addForm.addEventListener('submit', addRecipe)
+
+function addRecipe(){
+  event.preventDefault();
+  let label = document.getElementById('label').value;
+  let header = document.getElementById('header').value;
+  let description = document.getElementById('description').value;
+  fetch('http://localhost:3001/api/recipes/', {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({label:label, header:header, description:description})
+  })
+  .then((res) => res.json())
+  .then((data) => console.log(data))
+}
 ```
 
 ## Babel and Webpack
