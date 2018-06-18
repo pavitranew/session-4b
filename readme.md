@@ -68,7 +68,32 @@ Test the hamburger.
 
 Let's continue to build out the content in the body of the page so that a preview of all recipes are visible on the page.
 
+```js
+fetchLab( (content) => {
+  console.log(content)
+  const markup =
+  `<ul>
+  ${content.map(
+    recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
+  ).join('')}
+  </ul>`;
+  navbar.innerHTML = markup;
 
+  let generatedContent = '';
+  for (let i = 0; i < content.length; i++){
+    generatedContent += `
+    <div class="recipe-preview">
+    <h2><a href="recipe/${content[i]._id}">${content[i].title}</a></h2>
+    <img src="/img/recipes/${content[i].image}" />
+    <p>${content[i].description}</p>
+    <span onclick="deleteme('${content[i]._id}')">✖︎</span>
+    </div>
+    `
+  }
+  siteWrap.innerHTML = generatedContent;
+
+})
+```
 
 ## Babel and Webpack
 
