@@ -4,7 +4,7 @@
 
 `npm run boom!`
 
-Package JSON:
+Note the cleaned up package.json:
 
 ```js
 {
@@ -14,7 +14,7 @@ Package JSON:
   "main": "index.js",
   "scripts": {
     "start": "browser-sync start --server \"app\" --files \"app\"",
-    "sassy": "node-sass --watch \"scss\"  --output \"app/css/\"",
+    "sassy": "node-sass --watch \"scss\"  --output \"app/css/\" --source-map true",
     "boom!": "concurrently \"npm run start\" \"npm run sassy\" "
   },
   "keywords": [],
@@ -28,6 +28,241 @@ Package JSON:
   "dependencies": {
   }
 }
+```
+
+Also note the added flag on the `sassy` script: `--source-map true`. We will see this latewr on.
+
+Let's use our new api.
+
+```js
+function fetchLab(callback) {
+  fetch('http://localhost:3001/api/recipes')
+  // .then( res => console.log(res) )
+  .then( res => res.json() )
+  // .then( res => console.log(res) )
+  .then( data => callback(data) )
+}
+```
+
+See if the data is being called:
+
+```js
+fetchLab( (content) => {
+  console.log(content)
+```
+
+And rewrite the javascript for the menu using the new properties.
+
+```js
+fetchLab( (content) => {
+  console.log(content)
+  const markup =
+  `<ul>
+  ${content.map(
+    recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
+  ).join('')}
+  </ul>`;
+  navbar.innerHTML = markup;
+})
+```
+
+Test the hamburger.
+
+Let's continue to build out the content in the body of the page so that a preview of all recipes are visible.
+
+```js
+fetchLab( (content) => {
+  console.log(content)
+  const markup =
+  `<ul>
+  ${content.map(
+    recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
+  ).join('')}
+  </ul>`;
+  navbar.innerHTML = markup;
+
+  let generatedContent = '';
+  for (let i = 0; i < content.length; i++){
+    generatedContent += `
+    <div class="recipe-preview">
+    <h2><a href="recipe/${content[i]._id}">${content[i].title}</a></h2>
+    <img src="/img/recipes/${content[i].image}" />
+    <p>${content[i].description}</p>
+    <span onclick="deleteme('${content[i]._id}')">✖︎</span>
+    </div>
+    `
+  }
+  siteWrap.innerHTML = generatedContent;
+
+})
+```
+
+After removing the old scripts which permitted navigation using hashes, the entire `index.js` script looks like this:
+
+```js
+const nav = document.getElementById('main');
+const navbar = nav.querySelector('.navitems');
+const siteWrap = document.querySelector('.site-wrap');
+
+// fix the navigation to the top of the page
+
+let topOfNav = nav.offsetTop;
+
+function fixNav() {
+  if(window.scrollY >= topOfNav) {
+    document.body.style.paddingTop = nav.offsetHeight + 'px';
+    document.body.classList.add('fixed-nav');
+  } else {
+    document.body.classList.remove('fixed-nav');0000001
+    document.body.style.paddingTop = 0;
+  }
+}
+
+// Show and hide the navigation
+
+const logo = document.querySelector('.logo')
+
+logo.addEventListener('click', showMenu);
+
+function showMenu(e) {
+  document.body.classList.toggle('show');
+  const navLinks = document.querySelectorAll('.navitems a');
+  navLinks.forEach(link => link.addEventListener('click', dump))
+  e.preventDefault();
+}
+
+function dump(){
+  document.body.classList.toggle('show');
+}
+
+// CONTENT
+
+fetchLab( (content) => {
+  console.log(content)
+  const markup =
+  `<ul>
+  ${content.map(
+    recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
+  ).join('')}
+  </ul>`;
+  navbar.innerHTML = markup;
+
+  let generatedContent = '';
+  for (let i = 0; i < content.length; i++){
+    generatedContent += `
+    <div class="recipe-preview">
+    <h2><a href="recipe/${content[i]._id}">${content[i].title}</a></h2>
+    <img src="/img/recipes/${content[i].image}" />
+    <p>${content[i].description}</p>
+    <span onclick="deleteme('${content[i]._id}')">✖︎</span>
+    </div>
+    `
+  }
+  siteWrap.innerHTML = generatedContent;
+})
+
+function fetchLab(callback) {
+  fetch('http://localhost:3001/api/recipes')
+  .then( res => res.json() )
+  .then( data => callback(data) )
+}
+
+window.addEventListener('scroll', fixNav);
+```
+
+Tidy up the index file and css.
+
+```html
+<header>
+    <h1>Recipes!</h1>
+</header>
+```
+
+`_forms.scss`:
+
+```css
+form * {
+  font-size: 0.875rem;
+}
+
+input, textarea {
+  display: block;
+  margin: 1rem;
+  width: 90%;
+  padding: 0.25rem;
+}
+button {
+  padding: 0.5rem;
+  background-color: $link;
+  color: #fff; 
+  margin: 0 1rem;
+  border-radius: 3px;
+  border: none;
+}
+```
+
+`_structure.scss`:
+
+```css
+.site-wrap {
+  max-width: 90vw;
+  margin: 20px auto;
+  background: white;;
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.05);
+  transform: scale(0.98);
+  transition: transform 0.5s;
+}
+
+.recipe-preview {
+  padding: 1rem;
+  border-bottom: 1rem solid $badass;
+  h2 {
+    margin-bottom: 0.5rem;
+    a {
+      color: $link;
+    }
+  }
+  ul {
+    padding: 1rem;
+  }
+  p {
+    margin: 1rem 0;
+  }
+}
+
+body.fixed-nav .site-wrap {
+  transform: scale(1);
+}
+```
+
+Don't forget the header:
+
+```css
+header {
+  height: 10vh;
+  background: url(../img/recipes/pho.png) center no-repeat;
+```
+
+## Delete a Recipe
+
+```js
+function deleteme(thingtodelete) {
+  fetch(`http://localhost:3002/api/recipes'/${thingtodelete}`, {
+    method: 'delete'
+  })
+  .then(location.href = '/')
+}
+```
+
+## View Recipe Details
+
+Collect the links after generating them:
+
+```js
+  siteWrap.innerHTML = generatedContent;
+  
+  const newLinks = document.querySelectorAll('.site-wrap h2 a')
+  newLinks.forEach( link => link.addEventListener('click', detailme) )
 ```
 
 ## Babel and Webpack
