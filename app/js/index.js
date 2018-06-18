@@ -38,7 +38,6 @@ function dump(){
 // 1 build the navbar dynamically from database
 
 fetchLab( (content) => {
-  console.log(content)
   const markup =
   `<ul>
   ${content.map(
@@ -59,17 +58,71 @@ fetchLab( (content) => {
     `
   }
   siteWrap.innerHTML = generatedContent;
+
+  const newLinks = document.querySelectorAll('.site-wrap h2 a')
+  newLinks.forEach( link => link.addEventListener('click', detailme) )
     
 })
 
 // NEW function for getting data - uses fetch and promises
 
+const ApiUrl = 'http://localhost:3001/api/recipes';
+
 function fetchLab(callback) {
+  const ApiUrl = 'http://localhost:3001/api/recipes';
+  console.log(ApiUrl)
   fetch('http://localhost:3001/api/recipes')
-  // .then( res => console.log(res) )
   .then( res => res.json() )
-  // .then( res => console.log(res) )
   .then( data => callback(data) )
 }
+
+function deleteme(thingtodelete) {
+  console.log(thingtodelete)
+  fetch(`http://localhost:3001/api/recipes/${thingtodelete}`, {
+    method: 'delete'
+  })
+  .then(location.href = '/')
+}
+
+// function fetchOne(recipeId, callback) {
+//   // let id = this.getAttribute('href');
+//   // console.log(`${ApiUrl}/${recipeId}`)
+//   fetch(`http://localhost:3001/api/recipes/${recipeId}`, {
+//     method: 'get'
+//   })
+//   .then(response => response.json())
+//   // .then(res => console.log(res))
+//   .then(data => callback(data))
+// }
+
+// function detailme() {
+//   event.preventDefault();
+//   let recipeId = this.getAttribute('href').substring(7);
+//   console.log(recipeId)
+//   fetchOne(recipeId, (content) => {
+//     // console.log('content '+content.title)
+//     let singleRecipeContent = `
+//       <div class="recipe-preview">
+//       <h2>Recipe for ${content.title}</h2>
+//       <img src="/img/recipes/${content.image}" />
+//       <h2>Ingredients</h2>
+//       <ul>
+//       <li>${content.ingredients[0]}</li>
+//       <li>${content.ingredients[1]}</li>
+//       <li>${content.ingredients[2]}</li>
+//     </ul>
+//     <h2>Instructions</h2>
+//       <ul>
+//         <li>${content.preparation[0].step}</li>
+//         <li>${content.preparation[1].step}</li>
+//         <li>${content.preparation[2].step}</li>
+//       </ul>
+//       </div>
+//     `
+//     siteWrap.innerHTML = singleRecipeContent;
+//   })
+//   event.preventDefault();
+// }
+
 
 window.addEventListener('scroll', fixNav);

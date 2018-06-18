@@ -14,7 +14,7 @@ Note the cleaned up package.json:
   "main": "index.js",
   "scripts": {
     "start": "browser-sync start --server \"app\" --files \"app\"",
-    "sassy": "node-sass --watch \"scss\"  --output \"app/css/\"",
+    "sassy": "node-sass --watch \"scss\"  --output \"app/css/\" --source-map true",
     "boom!": "concurrently \"npm run start\" \"npm run sassy\" "
   },
   "keywords": [],
@@ -30,6 +30,8 @@ Note the cleaned up package.json:
 }
 ```
 
+Also note the added flag on the `sassy` script: `--source-map true`. We will see this latewr on.
+
 Let's use our new api.
 
 ```js
@@ -42,14 +44,14 @@ function fetchLab(callback) {
 }
 ```
 
-Let's see if the data is being called:
+See if the data is being called:
 
 ```js
 fetchLab( (content) => {
   console.log(content)
 ```
 
-And rewrite the javascript using the new properties.
+And rewrite the javascript for the menu using the new properties.
 
 ```js
 fetchLab( (content) => {
@@ -66,7 +68,7 @@ fetchLab( (content) => {
 
 Test the hamburger.
 
-Let's continue to build out the content in the body of the page so that a preview of all recipes are visible on the page.
+Let's continue to build out the content in the body of the page so that a preview of all recipes are visible.
 
 ```js
 fetchLab( (content) => {
@@ -95,7 +97,7 @@ fetchLab( (content) => {
 })
 ```
 
-After removing the old scripts which permitted navigation using hashes the entire `index.js` script looks like this:
+After removing the old scripts which permitted navigation using hashes, the entire `index.js` script looks like this:
 
 ```js
 const nav = document.getElementById('main');
@@ -233,9 +235,35 @@ body.fixed-nav .site-wrap {
 }
 ```
 
+Don't forget the header:
+
+```css
+header {
+  height: 10vh;
+  background: url(../img/recipes/pho.png) center no-repeat;
+```
+
 ## Delete a Recipe
 
+```js
+function deleteme(thingtodelete) {
+  fetch(`http://localhost:3002/api/recipes'/${thingtodelete}`, {
+    method: 'delete'
+  })
+  .then(location.href = '/')
+}
+```
 
+## View Recipe Details
+
+Collect the links after generating them:
+
+```js
+  siteWrap.innerHTML = generatedContent;
+  
+  const newLinks = document.querySelectorAll('.site-wrap h2 a')
+  newLinks.forEach( link => link.addEventListener('click', detailme) )
+```
 
 ## Babel and Webpack
 

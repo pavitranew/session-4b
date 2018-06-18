@@ -84,7 +84,7 @@ nav {
 
 header {
   height: 10vh;
-  background: url(../img/img.jpg) center no-repeat;
+  background: url(../img/recipes/pho.png) center no-repeat;
   background-size: cover;
   display: flex;
   align-items: center;
@@ -137,3 +137,5 @@ button {
 
 body.fixed-nav .site-wrap {
   transform: scale(1); }
+
+/*# sourceMappingURL=styles.css.map */
