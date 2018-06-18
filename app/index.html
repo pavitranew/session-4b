@@ -2,36 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Session 4</title>
+  <title>Session 2</title>
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    input, textarea {
+      display: block;
+      margin: 1rem;
+      width: 70%;
+    }
+  </style>
 </head>
 <body>
   
   <header>
-    <h1>Recipes!</h1>
+    <h1>Now on the app store!</h1>
   </header>
-
+  
   <nav id="main">
     <div class="logo"><img src="img/logo.svg" /></div>
     <div class="navitems"></div>
   </nav>
-
-  <form action="http://localhost:3002/api/recipes" method="post">
-    <input type="text" placeholder="Recipe Title" name="title">
-    <input type="text" placeholder="Recipe Image" name="image">
-    <textarea type="text" placeholder="Recipe Description" name="description"></textarea>
-    <button type="submit">Submit</button>
-  </form>
-
   
   <div class="site-wrap"></div>
 
-  <!-- <script src="js/main.js"></script> -->
-  <script src="js/index.js"></script>
+  <form action="/entries" method="POST">
+    <input type="text" placeholder="label" name="label">
+    <input type="text" placeholder="header" name="header">
+    <textarea type="text" placeholder="content" name="content"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+  
+  <script src="js/main-alt.js"></script>
   
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
