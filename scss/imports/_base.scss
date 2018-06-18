@@ -34,17 +34,17 @@ img {
     width: 100%;
 }
 
-.site-wrap {
-    max-width: 90vw;
-    margin: 40px auto;
-    background: white;
-    padding: 20px 20px;
-    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.05);
-    transform: scale(0.98);
-    transition: transform 0.5s;
-}
+// .site-wrap {
+//     max-width: 90vw;
+//     margin: 40px auto;
+//     background: white;
+//     padding: 20px 20px;
+//     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.05);
+//     transform: scale(0.98);
+//     transition: transform 0.5s;
+// }
 
-body.fixed-nav .site-wrap {
-    transform: scale(1);
-}
+// body.fixed-nav .site-wrap {
+//     transform: scale(1);
+// }
 
