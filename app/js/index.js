@@ -62,21 +62,6 @@ fetchLab( (content) => {
     
 })
 
-// 2 set the content when the user navigates
-
-function navigate() {
-  // substr removes the hash - returns the part of a string between the start index and a number of characters after it.
-  let newloc = location.hash.substr(1);
-  fetchLab((content) => {
-    let newContent = content.filter(contentItem => contentItem.label == newloc);
-    siteWrap.innerHTML = `
-    <h2>${newContent[0].header}</h2>
-    ${newContent[0].image}
-    ${newContent[0].content}
-    `;
-  })
-}
-
 // NEW function for getting data - uses fetch and promises
 
 function fetchLab(callback) {
@@ -87,25 +72,4 @@ function fetchLab(callback) {
   .then( data => callback(data) )
 }
 
-// OLD - XMLHttpRequest replaced by fetch above
-
-// function fetchData(hash, callback) {
-//   var xhr = new XMLHttpRequest();
-
-//   xhr.onload = function () {
-//     callback(JSON.parse(xhr.response));
-//   };
-
-//   xhr.open('GET', 'http://localhost:3004/content', true);
-//   xhr.send();
-// }
-
-
-if (!location.hash) {
-  location.hash = '#watchlist';
-}
-
-// navigate();
-
 window.addEventListener('scroll', fixNav);
-window.addEventListener('hashchange', navigate);

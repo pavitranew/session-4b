@@ -109,3 +109,8 @@ header {
     font-size: 7vw;
     font-weight: 400;
     text-shadow: 3px 4px 0 rgba(0, 0, 0, 0.2); }
+
+input, textarea {
+  display: block;
+  margin: 1rem;
+  width: 70%; }
