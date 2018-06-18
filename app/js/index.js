@@ -38,13 +38,28 @@ function dump(){
 // 1 build the navbar dynamically from database
 
 fetchLab( (content) => {
+  console.log(content)
   const markup =
   `<ul>
   ${content.map(
-    listItem => `<li><a href="#${listItem.label}">${listItem.label}</a></li>`
+    recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
   ).join('')}
   </ul>`;
   navbar.innerHTML = markup;
+
+  let generatedContent = '';
+  for (let i = 0; i < content.length; i++){
+    generatedContent += `
+    <div class="recipe-preview">
+    <h2><a href="recipe/${content[i]._id}">${content[i].title}</a></h2>
+    <img src="/img/recipes/${content[i].image}" />
+    <p>${content[i].description}</p>
+    <span onclick="deleteme('${content[i]._id}')">✖︎</span>
+    </div>
+    `
+  }
+  siteWrap.innerHTML = generatedContent;
+    
 })
 
 // 2 set the content when the user navigates
@@ -65,7 +80,7 @@ function navigate() {
 // NEW function for getting data - uses fetch and promises
 
 function fetchLab(callback) {
-  fetch('https://api.mlab.com/api/1/databases/bcl/collections/entries?apiKey=oZ92RXFzah01L1xNSWAZWZrm4kn6zF0n')
+  fetch('http://localhost:3001/api/recipes')
   // .then( res => console.log(res) )
   .then( res => res.json() )
   // .then( res => console.log(res) )
@@ -90,7 +105,7 @@ if (!location.hash) {
   location.hash = '#watchlist';
 }
 
-navigate();
+// navigate();
 
 window.addEventListener('scroll', fixNav);
 window.addEventListener('hashchange', navigate);

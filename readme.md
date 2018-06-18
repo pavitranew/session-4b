@@ -30,7 +30,43 @@ Note the cleaned up package.json:
 }
 ```
 
-Let's switch this to use our new api.
+Let's use our new api.
+
+```js
+function fetchLab(callback) {
+  fetch('http://localhost:3001/api/recipes')
+  // .then( res => console.log(res) )
+  .then( res => res.json() )
+  // .then( res => console.log(res) )
+  .then( data => callback(data) )
+}
+```
+
+Let's see if the data is being called:
+
+```js
+fetchLab( (content) => {
+  console.log(content)
+```
+
+And rewrite the javascript using the new properties.
+
+```js
+fetchLab( (content) => {
+  console.log(content)
+  const markup =
+  `<ul>
+  ${content.map(
+    recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
+  ).join('')}
+  </ul>`;
+  navbar.innerHTML = markup;
+})
+```
+
+Test the hamburger.
+
+Let's continue to build out the content in the body of the page so that a preview of all recipes are visible on the page.
 
 
 
