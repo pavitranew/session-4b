@@ -523,7 +523,7 @@ module.exports = {
 };
 ```
 
-Kill and restart the Express installation with boom! and inspect the bundle again. Note that `myapp.js` has been incorporated _and_ translated according to our preset by Babel. 
+Kill and restart the Express installation with boom! and inspect the bundle again. Note that `myapp.js` has been incorporated _and_ translated according to our preset by Babel.
 
 ## ES6 Modules
 
