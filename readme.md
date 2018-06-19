@@ -1,4 +1,4 @@
-# IV - Client Side with ExpressJS
+# IV - Client Side with ExpressJS 
 
 ## Reading
 
@@ -34,17 +34,20 @@ Note the cleaned up package.json:
 }
 ```
 
-Also note the added flag on the `sassy` script: `--source-map true`. We will see this latewr on.
+Also note the added flag on the `sassy` script: `--source-map true`. We will use this later on.
 
 Let's use our new api.
+
+In `app/index.js`:
 
 ```js
 function fetchLab(callback) {
   fetch('http://localhost:3001/api/recipes')
   // .then( res => console.log(res) )
   .then( res => res.json() )
-  // .then( res => console.log(res) )
+  // .then( res => console.log(res.json()) )
   .then( data => callback(data) )
+  // .then ( data => console.log(data))
 }
 ```
 
@@ -189,7 +192,7 @@ function fetchLab(callback) {
 window.addEventListener('scroll', fixNav);
 ```
 
-Note: I left a commented out for loop alternative in the code above for comparison.
+Note: I left (the commented) for loop alternative in the code above for comparison.
 
 Since we are using Promises we can refactor our code further to remove callbacks.
 
@@ -221,15 +224,13 @@ function fetchLab() {
   
     siteWrap.innerHTML = output;
   
-    const newLinks = document.querySelectorAll('.site-wrap h2 a')
-    newLinks.forEach( link => link.addEventListener('click', detailme) )
   })
 }
 
 fetchLab();
 ```
 
-And delete the original `fetchLab()` function that used the callback.
+And delete or comment out the original `fetchLab()` function that used the callback.
 
 Tidy up the index file and css.
 
@@ -237,6 +238,14 @@ Tidy up the index file and css.
 <header>
     <h1>Recipes!</h1>
 </header>
+```
+
+`_header.scss`:
+
+```css
+header {
+  height: 10vh;
+  background: url(../img/recipes/pho.png) center no-repeat;
 ```
 
 `_forms.scss`:
@@ -296,19 +305,11 @@ body.fixed-nav .site-wrap {
 }
 ```
 
-Don't forget the header:
-
-```css
-header {
-  height: 10vh;
-  background: url(../img/recipes/pho.png) center no-repeat;
-```
-
 ## Delete a Recipe
 
 ```js
 function deleteme(thingtodelete) {
-  fetch(`http://localhost:3002/api/recipes'/${thingtodelete}`, {
+  fetch(`http://localhost:3001/api/recipes/${thingtodelete}`, {
     method: 'delete'
   })
   .then(location.href = '/')
@@ -363,13 +364,13 @@ function detailme() {
 
 ### Add a Recipe
 
-We have the form from a previous class.
+We have the form from a previous class. Update it with recipe content:
 
 ```html
   <form id="addRecipe">
-    <input type="text" placeholder="label" name="label" id="label">
-    <input type="text" placeholder="header" name="header" id="header">
-    <textarea type="text" placeholder="content" name="content" id="description"></textarea>
+    <input type="text" placeholder="title" name="title" id="title">
+    <input type="text" placeholder="image" name="image" id="image">
+    <textarea type="text" placeholder="description" name="description" id="description"></textarea>
     <button type="submit">Submit</button>
   </form>
 ```
@@ -380,8 +381,8 @@ addForm.addEventListener('submit', addRecipe)
 
 function addRecipe(){
   event.preventDefault();
-  let label = document.getElementById('label').value;
-  let header = document.getElementById('header').value;
+  let title = document.getElementById('title').value;
+  let image = document.getElementById('image').value;
   let description = document.getElementById('description').value;
   fetch('http://localhost:3001/api/recipes/', {
     method: 'post',
@@ -389,7 +390,7 @@ function addRecipe(){
       'Accept': 'application/json, text/plain, */*',
       'Content-type': 'application/json'
     },
-    body: JSON.stringify({label:label, header:header, description:description})
+    body: JSON.stringify({title:title, image:image, description:description})
   })
   .then((res) => res.json())
   .then((data) => console.log(data))
