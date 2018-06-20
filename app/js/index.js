@@ -33,64 +33,80 @@ function dump(){
   document.body.classList.toggle('show');
 }
 
-// CONTENT
+function fetchLab() {
+  fetch('http://localhost:3001/api/recipes')
+  .then( res => res.json() )
+  .then( data => {
+    const markup =
+    `<ul>
+    ${data.map(
+      recipe => `<li><a href="#${recipe._id}">${recipe.title}</a></li>`
+    ).join('')}
+    </ul>`;
+    navbar.innerHTML = markup;
+  
+    let output = '';
+  
+    data.forEach((recipe) => {
+      output += `
+        <div class="recipe-preview">
+        <h2><a href="recipe/${recipe._id}">${recipe.title}</a></h2>
+        <img src="/img/recipes/${recipe.image}" />
+        <p>${recipe.description}</p>
+        <span onclick="deleteme('${recipe._id}')">✖︎</span>
+        </div>
+      `
+    })
+  
+    siteWrap.innerHTML = output;
 
-// 1 build the navbar dynamically from database
-
-fetchLab( (content) => {
-  const markup =
-  `<ul>
-  ${content.map(
-    listItem => `<li><a href="#${listItem.label}">${listItem.label}</a></li>`
-  ).join('')}
-  </ul>`;
-  navbar.innerHTML = markup;
-})
-
-// 2 set the content when the user navigates
-
-function navigate() {
-  // substr removes the hash - returns the part of a string between the start index and a number of characters after it.
-  let newloc = location.hash.substr(1);
-  fetchLab((content) => {
-    let newContent = content.filter(contentItem => contentItem.label == newloc);
-    siteWrap.innerHTML = `
-    <h2>${newContent[0].header}</h2>
-    ${newContent[0].image}
-    ${newContent[0].content}
-    `;
+    const newLinks = document.querySelectorAll('.site-wrap h2 a')
+    newLinks.forEach( link => link.addEventListener('click', detailme) )
+  
   })
 }
 
-// NEW function for getting data - uses fetch and promises
-
-function fetchLab(callback) {
-  fetch('https://api.mlab.com/api/1/databases/bcl/collections/entries?apiKey=oZ92RXFzah01L1xNSWAZWZrm4kn6zF0n')
-  // .then( res => console.log(res) )
-  .then( res => res.json() )
-  // .then( res => console.log(res) )
-  .then( data => callback(data) )
-}
-
-// OLD - XMLHttpRequest replaced by fetch above
-
-// function fetchData(hash, callback) {
-//   var xhr = new XMLHttpRequest();
-
-//   xhr.onload = function () {
-//     callback(JSON.parse(xhr.response));
-//   };
-
-//   xhr.open('GET', 'http://localhost:3004/content', true);
-//   xhr.send();
-// }
-
-
-if (!location.hash) {
-  location.hash = '#watchlist';
-}
-
-navigate();
+fetchLab();
 
 window.addEventListener('scroll', fixNav);
-window.addEventListener('hashchange', navigate);
+
+function deleteme(thingtodelete) {
+  fetch(`http://localhost:3001/api/recipes/${thingtodelete}`, {
+    method: 'delete'
+  })
+  .then(location.href = '/')
+}
+
+
+function detailme(e) {
+  event.preventDefault();
+  
+  let recipeId = this.getAttribute('href').substring(7);
+  console.log(recipeId)
+  fetch(`http://localhost:3001/api/recipes/${recipeId}`, {
+    method: 'get'
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data)
+    let singleRecipeContent = `
+      <div class="recipe-preview">
+      <h2>Recipe for ${data.title}</h2>
+      <img src="/img/recipes/${data.image}" />
+      <h2>Ingredients</h2>
+      <ul>
+      <li>${data.ingredients[0]}</li>
+      <li>${data.ingredients[1]}</li>
+      <li>${data.ingredients[2]}</li>
+    </ul>
+    <h2>Instructions</h2>
+      <ul>
+        <li>${data.preparation[0].step}</li>
+        <li>${data.preparation[1].step}</li>
+        <li>${data.preparation[2].step}</li>
+      </ul>
+      </div>
+    `
+    siteWrap.innerHTML = singleRecipeContent;
+  })
+}
