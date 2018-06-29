@@ -28,7 +28,7 @@ img {
 
 .site-wrap {
   max-width: 90vw;
-  margin: 40px auto;
+  margin: 0 auto;
   background: white;
   padding: 20px 20px;
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.05);
@@ -96,7 +96,7 @@ nav {
 
 header {
   height: 10vh;
-  background: url(../img/img.jpg) center no-repeat;
+  background: url(../img/recipes/pho.png) center no-repeat;
   background-size: cover;
   display: flex;
   align-items: center;
@@ -109,3 +109,5 @@ header {
     font-size: 7vw;
     font-weight: 400;
     text-shadow: 3px 4px 0 rgba(0, 0, 0, 0.2); }
+
+/*# sourceMappingURL=styles.css.map */

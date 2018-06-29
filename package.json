@@ -6,16 +6,21 @@
   "scripts": {
     "start": "browser-sync start --server \"app\" --files \"app\"",
     "sassy": "node-sass --watch \"scss\"  --output \"app/css/\" --source-map true",
-    "boom!": "concurrently \"npm run start\" \"npm run sassy\" "
+    "build": "webpack --progress --watch",
+    "boom!": "concurrently \"npm run start\" \"npm run sassy\" \"npm run build\" "
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
     "browser-sync": "^2.24.4",
     "concurrently": "^3.5.1",
-    "node-sass": "^4.9.0"
+    "node-sass": "^4.9.0",
+    "webpack": "^4.12.2",
+    "webpack-cli": "^3.0.8"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
