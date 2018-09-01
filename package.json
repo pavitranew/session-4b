@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "",
+  "description": "1. Using the API developed in class in session 4a, create a backend that connects to your database on mLab.\r 2. Using the front end developed in class in session 4b, extend the interface to support creating a new database entry via a form, and a detail view of a recipe with a proper route so that the user can use the back button to return to the recipe listing on the home page.",
   "main": "index.js",
   "scripts": {
     "start": "browser-sync start --server \"app\" --files \"app\"",
@@ -12,10 +12,19 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "browser-sync": "^2.24.4",
-    "concurrently": "^3.5.1",
+    "browser-sync": "^2.24.7",
+    "concurrently": "^3.6.1",
     "node-sass": "^4.9.0"
   },
   "dependencies": {
-  }
+    "sassy": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavitranew/session-4b.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pavitranew/session-4b/issues"
+  },
+  "homepage": "https://github.com/pavitranew/session-4b#readme"
 }

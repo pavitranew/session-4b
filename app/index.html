@@ -17,8 +17,8 @@
 <body>
   
   <header>
-    <h1>Now on the app store!</h1>
-  </header>
+    <h1>Recipes!</h1>
+</header>
   
   <nav id="main">
     <div class="logo"><img src="img/logo.svg" /></div>
@@ -27,10 +27,10 @@
   
   <div class="site-wrap"></div>
 
-  <form action="/entries" method="POST">
-    <input type="text" placeholder="label" name="label">
-    <input type="text" placeholder="header" name="header">
-    <textarea type="text" placeholder="content" name="content"></textarea>
+  <form id="addRecipe">
+    <input type="text" placeholder="title" name="title" id="title">
+    <input type="text" placeholder="image" name="image" id="image">
+    <textarea type="text" placeholder="description" name="description" id="description"></textarea>
     <button type="submit">Submit</button>
   </form>
   

@@ -2,11 +2,17 @@ const nav = document.getElementById('main');
 const navbar = nav.querySelector('.navitems');
 const siteWrap = document.querySelector('.site-wrap');
 
+
+
+//newLinks.forEach( link => link.addEventListener('click', detailme) );
+
+
 // fix the navigation to the top of the page
 
 let topOfNav = nav.offsetTop;
 
 function fixNav() {
+ 
   if(window.scrollY >= topOfNav) {
     document.body.style.paddingTop = nav.offsetHeight + 'px';
     document.body.classList.add('fixed-nav');
@@ -33,64 +39,113 @@ function dump(){
   document.body.classList.toggle('show');
 }
 
-// CONTENT
-
-// 1 build the navbar dynamically from database
-
-fetchLab( (content) => {
-  const markup =
-  `<ul>
-  ${content.map(
-    listItem => `<li><a href="#${listItem.label}">${listItem.label}</a></li>`
-  ).join('')}
-  </ul>`;
-  navbar.innerHTML = markup;
-})
-
-// 2 set the content when the user navigates
-
-function navigate() {
-  // substr removes the hash - returns the part of a string between the start index and a number of characters after it.
-  let newloc = location.hash.substr(1);
-  fetchLab((content) => {
-    let newContent = content.filter(contentItem => contentItem.label == newloc);
-    siteWrap.innerHTML = `
-    <h2>${newContent[0].header}</h2>
-    ${newContent[0].image}
-    ${newContent[0].content}
-    `;
-  })
-}
-
-// NEW function for getting data - uses fetch and promises
-
-function fetchLab(callback) {
-  fetch('https://api.mlab.com/api/1/databases/bcl/collections/entries?apiKey=oZ92RXFzah01L1xNSWAZWZrm4kn6zF0n')
-  // .then( res => console.log(res) )
+function fetchLab() {
+  fetch('http://localhost:3001/api/recipes')
   .then( res => res.json() )
-  // .then( res => console.log(res) )
-  .then( data => callback(data) )
+  .then( data => {
+    const markup =
+    `<ul>
+    ${data.map(
+      recipe => `<li><a href="javascript:void(0);" onclick="detailme('${recipe._id}')">${recipe.title}</a></li>`
+    ).join('')}
+    </ul>`;
+    navbar.innerHTML = markup;
+  
+    let output = '';
+  
+    data.forEach((recipe) => {
+      output += `
+        <div class="recipe-preview">
+        <h2><a href="javascript:void(0);" onclick="detailme('${recipe._id}')">${recipe.title}</a></h2>
+        <img src="/img/recipes/${recipe.image}" />
+        <p>${recipe.description}</p>
+        <span onclick="deleteme('${recipe._id}');">✖︎</span>
+        </div>
+      `
+    })
+  
+    siteWrap.innerHTML = output;
+  
+  })
+
+ 
 }
 
-// OLD - XMLHttpRequest replaced by fetch above
+fetchLab();
 
-// function fetchData(hash, callback) {
-//   var xhr = new XMLHttpRequest();
-
-//   xhr.onload = function () {
-//     callback(JSON.parse(xhr.response));
-//   };
-
-//   xhr.open('GET', 'http://localhost:3004/content', true);
-//   xhr.send();
-// }
-
-
-if (!location.hash) {
-  location.hash = '#watchlist';
+function deleteme(thingtodelete) {
+  fetch(`http://localhost:3001/api/recipes/${thingtodelete}`, {
+    method: 'delete'
+  })
+  .then(location.href = '/')
 }
 
-navigate();
+
+
+
+
+function detailme(idd) {
+
+ 
+ event.preventDefault();
+
+  let recipeId = idd;
+
+  fetch(`http://localhost:3001/api/recipes/${recipeId}`, {
+    method: 'get'
+  })
+  .then(response => response.json())
+  .then(data => {
+    
+    let singleRecipeContent = `
+      <div class="recipe-preview">
+      <h2>Recipe for ${data.title}</h2>
+      <img src="/img/recipes/${data.image}" />
+      <h2>Ingredients</h2>
+      <ul>
+      <li>${data.ingredients[0]}</li>
+      <li>${data.ingredients[1]}</li>
+      <li>${data.ingredients[2]}</li>
+    </ul>
+    <h2>Instructions</h2>
+      <ul>
+        <li>${data.preparation[0].step}</li>
+        <li>${data.preparation[1].step}</li>
+        <li>${data.preparation[2].step}</li>
+      </ul>
+      </div>
+    `
+    siteWrap.innerHTML = singleRecipeContent;
+  })
+  
+}
+
+// end view details
+
+// add
+const addForm = document.getElementById('addRecipe');
+addForm.addEventListener('submit', addRecipe)
+
+function addRecipe(){
+  event.preventDefault();
+  let title = document.getElementById('title').value;
+  let image = document.getElementById('image').value;
+  let description = document.getElementById('description').value;
+  fetch('http://localhost:3001/api/recipes/', {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({title:title, image:image, description:description})
+  })
+  .then((res) => res.json())
+  .then((data) => console.log(data))
+}
+// end add
+
+
 
 window.addEventListener('scroll', fixNav);
-window.addEventListener('hashchange', navigate);
+
+
